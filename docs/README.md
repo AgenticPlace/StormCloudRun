@@ -8,7 +8,7 @@ StormCloudRun is a premier, one-click deployment tool designed to bridge the gap
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/stormcloudrun.git
+   git clone https://github.com/agenticplace/stormcloudrun
    cd stormcloudrun
    ```
 
