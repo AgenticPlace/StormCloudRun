@@ -794,10 +794,10 @@ class FreeAIService {
     this.isAuthenticated = false;
     this.endpoint = 'https://cloudcode-pa.googleapis.com/v1internal';
     
-    // Google Code Assist OAuth credentials (safe for installed apps)
+    // OAuth configuration for AI service
     this.oauthConfig = {
-      clientId: 'YOUR-GOOGLE-CLIENT-ID.apps.googleusercontent.com',
-      clientSecret: 'GOCSPX-YOUR-GOOGLE-CLIENT-SECRET',
+      clientId: process.env.AI_CLIENT_ID || 'your-client-id',
+      clientSecret: process.env.AI_CLIENT_SECRET || 'your-client-secret',
       scopes: [
         'https://www.googleapis.com/auth/cloud-platform',
         'https://www.googleapis.com/auth/userinfo.email',
