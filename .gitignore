@@ -153,6 +153,7 @@ credentials/
 *.pem
 *.key
 *.crt
+google-code-assist-credentials.txt
 
 # Testing
 coverage/
