@@ -1,6 +1,9 @@
 # 🚀 Deploy StormCloudRun to Google Cloud Run
 
 This guide shows you how to deploy StormCloudRun to Google Cloud Run using source build - the same way StormCloudRun deploys other applications! It is the complexity of this build that sparked the motivation to create StormCloudRun and remove this pain point for everyone everywhere. Deploying to CloudRun should be the seemless experience elegantly provided by StormCloudRun!
+
+StormCloudRun (c) MINDX 2025 Apache 2.0
+
 ## Prerequisites
 
 1. **Google Cloud CLI installed**: [Install gcloud](https://cloud.google.com/sdk/docs/install)
@@ -132,7 +135,7 @@ gcloud run services delete stormcloudrun --region=us-central1
 
 ### manual steps to first deployment
 
-🚀 Deploying StormCloudRun to Google Cloud
+🚀 Deploying StormCloudRun to <a href="https://cloud.google.com/run">Google Cloud</a><br />
 This guide provides the complete, step-by-step instructions to deploy the full-stack StormCloudRun application to Google Cloud Run. The process uses a secure, automated, source-based deployment pipeline via Google Cloud Build.
 # Prerequisites
 Before you begin, ensure you have the following:<br />
