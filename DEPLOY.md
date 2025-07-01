@@ -60,7 +60,7 @@ gcloud run deploy stormcloudrun \
 
 After deployment, you need to set up:
 
-### 1. Secret Manager Secrets
+### Secret Manager Secrets
 
 ```bash
 # Add your OAuth client secrets
@@ -68,7 +68,7 @@ gcloud secrets create oauth-client-secret --data-file=google-client-secret.txt
 gcloud secrets create github-client-secret --data-file=github-client-secret.txt
 ```
 
-### 2. Environment Variables
+### Environment Variables
 
 Set these in Cloud Run:
 
@@ -80,15 +80,17 @@ SESSION_SECRET=your-session-secret
 ENCRYPTION_KEY=your-encryption-key
 ```
 
-### 3. OAuth Redirect URIs
+### OAuth Redirect URIs
 
 Update your OAuth applications to include:
 ```txt
 - Google: `https://your-service-url.run.app/oauth2/google/callback`
 - GitHub: `https://your-service-url.run.app/api/auth/github/callback`
 ```
-## Using StormCloudRun to Deploy Itself
+// settings --> developer -->oAUTH -->IAM
 
+## Using StormCloudRun to Deploy Itself
+```prompt
 The meta approach - use StormCloudRun to deploy StormCloudRun:
 
 1. Deploy StormCloudRun manually first (using above steps)
@@ -97,15 +99,17 @@ The meta approach - use StormCloudRun to deploy StormCloudRun:
 4. Select the StormCloudRun repository
 5. Configure deployment settings
 6. Deploy! 🎉
+```prompt
 
 ## Architecture
 
 The deployment creates:
 - **Frontend**: Built with Vite and served as static files
 - **Backend**: Node.js server with Google Cloud APIs
-- **Database**: Google Firestore for user data
+- **Database**: Google <a href="https://firebase.google.com/docs/firestore">Firestore</a> for user data
 - **Secrets**: Google Secret Manager for OAuth credentials
 
+// Firestore settings nosql mongodb
 ## Monitoring
 
 View logs and metrics:
@@ -139,8 +143,9 @@ gcloud run services delete stormcloudrun --region=us-central1
 This guide provides the complete, step-by-step instructions to deploy the full-stack StormCloudRun application to Google Cloud Run. The process uses a secure, automated, source-based deployment pipeline via Google Cloud Build.
 # Prerequisites
 Before you begin, ensure you have the following:<br />
-Google Cloud Project: A project with billing enabled. You will need the Project ID (e.g., eternal-delight-435801-c0).<br />
-Google Cloud SDK (gcloud): The command-line tool must be installed and authenticated on your local machine. If not, install it here.<br />
+Google Cloud Project: A project with billing enabled. You will need the Project ID (e.g., eternal-delight-435801-c0) <a href="https://github.com/Professor-Codephreak"><br /><br />
+<a href="https://cloud.google.com/sdk">Google Cloud SDK</a> (gcloud): The command-line tool must be installed and authenticated on your local machine. If not, install it<br />
+
 GitHub Account: To register the OAuth application.<br />
 Node.js: To install and build the application's dependencies.<br />
 openssl: A command-line tool (pre-installed on macOS/Linux) for generating secure secrets.<br />
