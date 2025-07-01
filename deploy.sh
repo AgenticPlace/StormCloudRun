@@ -1,4 +1,5 @@
 #!/bin/bash
+# ./deploy.sh
 
 # StormCloudRun Deployment Script
 # Deploys StormCloudRun to Google Cloud Run using source build
@@ -35,35 +36,36 @@ echo "📋 Project: $PROJECT_ID"
 echo "🔧 Enabling required APIs..."
 gcloud services enable cloudbuild.googleapis.com \
     run.googleapis.com \
-    containerregistry.googleapis.com \
     secretmanager.googleapis.com \
     firestore.googleapis.com \
-    cloudresourcemanager.googleapis.com
+    iam.googleapis.com \
+    artifactregistry.googleapis.com \
+    --project=$PROJECT_ID
 
-# Set environment variables for the deployment
-echo "⚙️  Setting up environment variables..."
+# Remind user about secrets (since these shouldn't be in the YAML)
+echo "⚙️  Verifying production secrets..."
+echo "📝 Please ensure these secrets exist in Google Secret Manager for project $PROJECT_ID:"
+echo "   - oauth-client-secret (Your Google Client Secret)"
+echo "   - github-client-secret (Your GitHub Client Secret)"
+echo "   - SESSION_SECRET (A long, random string for cookies)"
+echo "   - ENCRYPTION_KEY (A different, long, random string for tokens)"
 
-# You'll need to set these secrets in Google Secret Manager:
-echo "📝 Make sure you have these secrets in Secret Manager:"
-echo "   - oauth-client-secret (Google OAuth client secret)"
-echo "   - github-client-secret (GitHub OAuth client secret)"
+# Submit the build using the YAML configuration
+echo "🏗️  Submitting build to Google Cloud Build..."
+gcloud builds submit --config cloudbuild.yaml . --project=$PROJECT_ID
 
-# Build and deploy using Cloud Build
-echo "🏗️  Building and deploying with Cloud Build..."
-gcloud builds submit --config cloudbuild.yaml .
+# Get the service URL after the build is done
+SERVICE_URL=$(gcloud run services describe stormcloudrun --region=us-west1 --format="value(status.url)" --project=$PROJECT_ID 2>/dev/null || echo "")
 
-# Get the service URL
-SERVICE_URL=$(gcloud run services describe stormcloudrun --region=us-central1 --format="value(status.url)" 2>/dev/null || echo "")
-
+echo "------------------------------------------------------"
 if [ -n "$SERVICE_URL" ]; then
-    echo "✅ Deployment successful!"
+    echo "✅ Deployment Succeeded!"
     echo "🌐 Your StormCloudRun app is live at: $SERVICE_URL"
     echo ""
-    echo "🔧 Next steps:"
-    echo "   1. Update your OAuth redirect URIs to include: $SERVICE_URL"
-    echo "   2. Set up your environment variables in Cloud Run"
-    echo "   3. Configure your Google and GitHub OAuth applications"
+    echo "🚨 FINAL MANUAL STEP 🚨"
+    echo "You must now connect your production secrets to the Cloud Run service."
+    echo "Go to the Cloud Run console -> stormcloudrun -> Edit & Deploy New Revision -> Variables & Secrets -> Reference your secrets."
 else
-    echo "❌ Deployment may have failed. Check the logs above."
-    exit 1
-fi 
+    echo "❌ Deployment build submitted, but could not fetch service URL."
+    echo "   Please check the build logs in the Google Cloud Console to confirm success."
+fi
