@@ -1,0 +1,71 @@
+# ./cloudbuild.yaml
+
+# This file defines the steps for Google Cloud Build to automatically build,
+# package, and deploy the full-stack StormCloudRun application.
+
+steps:
+  # Step 1: Install all dependencies from the root package.json
+  # This single step installs dependencies for both the frontend and backend workspaces.
+  # Using Google's official npm builder is fast and cached.
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['install']
+    id: 'Install-Dependencies'
+
+  # Step 2: Build the production-ready frontend assets (HTML, CSS, JS)
+  # This runs the 'npm run build' command defined in the root package.json.
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'build']
+    id: 'Build-Frontend'
+    waitFor: ['Install-Dependencies'] # This step runs after dependencies are installed.
+
+  # Step 3: Copy the built frontend assets into the backend's 'public' directory
+  # This prepares the backend server to serve the frontend as static files.
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Copying frontend build artifacts to backend/public..."
+        mkdir -p backend/public
+        cp -r dist/* backend/public/
+        echo "Copy complete."
+    id: 'Package-Frontend-with-Backend'
+    waitFor: ['Build-Frontend'] # This step runs after the frontend is built.
+
+  # Step 4: Deploy the backend service to Cloud Run using a source-based build
+  # The '--source' flag tells gcloud to look for a Dockerfile in the 'backend' directory,
+  # build a container image, push it to Artifact Registry, and deploy it to Cloud Run.
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'stormcloudrun'           # The name of your Cloud Run service.
+      - '--source=./backend'      # The directory containing the Dockerfile and server code.
+      - '--region=us-west1'       # Your specified service region.
+      - '--platform=managed'
+      - '--allow-unauthenticated' # Makes the service publicly accessible.
+      - '--port=8080'
+      # Set Production Environment Variables directly in the deployment command.
+      # This is a key "Infrastructure as Code" practice.
+      # The '^:^' delimiter is used to safely handle special characters in URLs.
+      # IMPORTANT: Replace the placeholder GITHUB_CLIENT_ID if it has changed.
+      - >-
+        --set-env-vars=^:^NODE_ENV=production:FRONTEND_URL=https://stormcloudrun-117975713968.us-west1.run.app:BACKEND_URL=https://stormcloudrun-117975713968.us-west1.run.app:GOOGLE_CLIENT_ID=117975713968-jce1p2f6s9b5gmvou0m7i54asdhhie0v.apps.googleusercontent.com:GITHUB_CLIENT_ID=Ov23liLQ8WS0hownE7hv
+      # Link secrets from Secret Manager to the service.
+      # The syntax is 'ENV_VAR_NAME=SECRET_NAME:latest'.
+      - >-
+        --set-secrets=SESSION_SECRET=SESSION_SECRET:latest,ENCRYPTION_KEY=ENCRYPTION_KEY:latest,GOOGLE_CLIENT_SECRET=oauth-client-secret:latest,GITHUB_CLIENT_SECRET=github-client-secret:latest
+    id: 'Deploy-to-Cloud-Run'
+    waitFor: ['Package-Frontend-with-Backend'] # This is the final step.
+
+# Specify the service account that Cloud Build will use to execute these steps.
+# This service account MUST have the following roles:
+# - Cloud Run Admin
+# - IAM Service Account User
+# - Secret Manager Secret Accessor
+# - Storage Admin (to write build logs)
+serviceAccount: 'projects/eternal-delight-435801-c0/serviceAccounts/117975713968-compute@developer.gserviceaccount.com'
+
+# This allows the use of dynamic variables like $PROJECT_ID in the build steps if needed.
+options:
+  dynamicSubstitutions: true
