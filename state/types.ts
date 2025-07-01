@@ -4,7 +4,7 @@
 */
 
 // --- Type Aliases for Clarity ---
-export type ConsoleView = 'logs' | 'intro' | 'developer' | 'features' | 'milestone' | 'modelcard' | 'iam' | 'a2a' | 'secrets' | 'build-locations' | 'auth-methods' | 'oauth-clients' | 'privacy' | 'free-ai-service' | 'client-side-auth' | 'self-hosting';
+export type ConsoleView = 'logs' | 'intro' | 'developer' | 'features' | 'milestone' | 'modelcard' | 'iam' | 'a2a' | 'secrets' | 'build-locations' | 'auth-methods' | 'oauth-clients' | 'privacy' | 'client-side-auth' | 'self-hosting';
 export type LogLevel = 'INFO' | 'SUCCESS' | 'WARN' | 'ERROR';
 
 // --- Data Structures ---

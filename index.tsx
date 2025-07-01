@@ -355,7 +355,7 @@ const App = () => {
           <a href="#" onClick={(e) => { e.preventDefault(); handleShowMarkdown("secrets")}}>Secrets Guide</a>
           <a href="#" onClick={(e) => { e.preventDefault(); handleShowMarkdown("build-locations")}}>Build Locations</a>
           {/* AI/Legal */}
-          <a href="#" onClick={(e) => { e.preventDefault(); handleShowMarkdown("free-ai-service")}}>Free AI Guide</a>
+          
           <a href="#" onClick={(e) => { e.preventDefault(); handleShowMarkdown("privacy")}}>Privacy</a>
         </div>
         StormCloudRun v0.9.2 :: Augmentic Intelligence &copy; MINDX 2025 :: Apache 2.0

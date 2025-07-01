@@ -49,7 +49,7 @@ All documentation is now organized in the `docs/` folder:
 - [`secrets.md`](secrets.md) - Secret Manager API documentation
 
 ### AI & Automation
-- [`free-ai-service.md`](free-ai-service.md) - Free AI service implementation
+
 - [`a2a.md`](a2a.md) - Agent-to-Agent API specification
 - [`modelcard.md`](modelcard.md) - AI agent model card
 

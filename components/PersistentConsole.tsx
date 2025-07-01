@@ -40,7 +40,7 @@ const markdownSources: Record<Exclude<ConsoleView, 'logs'>, { title: string, con
     secrets: { title: "Secrets Guide", content: markdown.secrets },
     'build-locations': { title: "Cloud Build Locations", content: markdown.buildLocations },
     // AI/Legal
-    'free-ai-service': { title: "Free AI Service Guide", content: markdown.freeAiService},
+
     privacy: { title: "Privacy Notice", content: markdown.privacy},
 };
 

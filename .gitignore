@@ -154,6 +154,7 @@ credentials/
 *.key
 *.crt
 google-code-assist-credentials.txt
+docs/free-ai-service.md
 
 # Testing
 coverage/
