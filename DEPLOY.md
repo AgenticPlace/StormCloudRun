@@ -70,7 +70,7 @@ gcloud secrets create github-client-secret --data-file=github-client-secret.txt
 
 Set these in Cloud Run:
 
-```
+```txt
 NODE_ENV=production
 GOOGLE_CLIENT_ID=your-google-client-id
 GITHUB_CLIENT_ID=your-github-client-id
@@ -81,9 +81,10 @@ ENCRYPTION_KEY=your-encryption-key
 ### 3. OAuth Redirect URIs
 
 Update your OAuth applications to include:
+```txt
 - Google: `https://your-service-url.run.app/oauth2/google/callback`
 - GitHub: `https://your-service-url.run.app/api/auth/github/callback`
-
+```
 ## Using StormCloudRun to Deploy Itself
 
 The meta approach - use StormCloudRun to deploy StormCloudRun:
@@ -106,11 +107,13 @@ The deployment creates:
 ## Monitoring
 
 View logs and metrics:
-```bash
-# View service logs
-gcloud run services logs read stormcloudrun --region=us-central1
 
+# View service logs
+```bash
+gcloud run services logs read stormcloudrun --region=us-central1
+```
 # Get service details
+```bash
 gcloud run services describe stormcloudrun --region=us-central1
 ```
 
@@ -156,27 +159,27 @@ openssl rand -hex 16
 copy the 32-character hexadecimal output (e.g., a1b2c3d4...). This will be your encryption key.
 Keep these two values ready for a later step.
 # Configure the Google Cloud OAuth App
-Navigate to the Google Cloud Console and select your project.
-Go to APIs & Services -> Credentials.
-Click + CREATE CREDENTIALS -> OAuth client ID.
-Select Web application and give it a name (e.g., "StormCloudRun Web App").
-Under Authorized redirect URIs, click + ADD URI and add your production backend callback URL:
-https://stormcloudrun-117975713968.us-west1.run.app/api/auth/google/callback
-Click CREATE. Copy the generated Client ID and Client Secret.
+Navigate to the Google Cloud Console and select your project.<br />
+Go to APIs & Services -> Credentials.<br />
+Click + CREATE CREDENTIALS -> OAuth client ID.<br />
+Select Web application and give it a name (e.g., "StormCloudRun Web App").<br />
+Under Authorized redirect URIs, click + ADD URI and add your production backend callback URL:<br />
+https://stormcloudrun-117975713968.us-west1.run.app/api/auth/google/callback<br />
+Click CREATE. Copy the generated Client ID and Client Secret.<br />
 # Configure the GitHub OAuth App
-Navigate to your GitHub Settings -> Developer settings -> OAuth Apps.
-Click New OAuth App.
-Fill out the form:
-Application name: StormCloudRun
-Homepage URL: https://stormcloudrun-117975713968.us-west1.run.app
-Authorization callback URL: https://stormcloudrun-117975713968.us-west1.run.app/api/auth/github/callback
-Click Register application.
-On the next page, click Generate a new client secret. Copy the new Client Secret immediately.
-Step 4. Store All Secrets in Google Secret Manager
-Now, we will securely store all four secrets (google_secret, github_secret, session_secret, encryption_key) in Google Cloud.
-Open Cloud Shell ([>_]) in the Google Cloud Console.
+Navigate to your GitHub Settings -> Developer settings -> OAuth Apps.<br />
+Click New OAuth App.<br />
+Fill out the form:<br />
+Application name: StormCloudRun<br />
+Homepage URL: https://stormcloudrun-117975713968.us-west1.run.app<br />
+Authorization callback URL: https://stormcloudrun-117975713968.us-west1.run.app/api/auth/github/callback<br />
+Click Register application.<br />
+On the next page, click Generate a new client secret. Copy the new Client Secret immediately.<br />
+Step 4. Store All Secrets in Google Secret Manager<br />
+Now, we will securely store all four secrets (google_secret, github_secret, session_secret, encryption_key) in Google Cloud.<br />
+Open Cloud Shell ([>_]) in the Google Cloud Console.<br />
 
-// Run the following commands one by one, pasting your actual secret values where indicated.
+// Run the following commands one by one, pasting your actual secret values where indicated.<br />
 
 # Store your Google Client Secret
 ```bash
@@ -195,15 +198,15 @@ echo "PASTE_YOUR_SESSION_SECRET_HERE" | gcloud secrets create SESSION_SECRET --d
 echo "PASTE_YOUR_ENCRYPTION_KEY_HERE" | gcloud secrets create ENCRYPTION_KEY --data-file=- --project=eternal-delight-435801-c0
 ```
 # Grant Permissions
-The service account for Cloud Build needs permission to deploy to Cloud Run.
-In the Google Cloud Console, go to IAM & Admin -> IAM.
-Find the principal that ends in @cloudbuild.gserviceaccount.com. Click the pencil icon to edit its roles.
-Add the following two roles:
-Cloud Run Admin
-Service Account User
-Click Save.
-Phase 2: Automated Deployment
-With the one-time setup complete, you can now deploy the application using the automated script.
+The service account for Cloud Build needs permission to deploy to Cloud Run.<br />
+In the Google Cloud Console, go to IAM & Admin -> IAM.<br />
+Find the principal that ends in @cloudbuild.gserviceaccount.com. Click the pencil icon to edit its roles.<br />
+Add the following two roles:<br />
+Cloud Run Admin<br />
+Service Account User<br />
+Click Save.<br />
+Phase 2: Automated Deployment<br />
+With the one-time setup complete, you can now deploy the application using the automated script.<br />
 # Authenticate and Configure Your Local gcloud
 In your local terminal (not Cloud Shell), authenticate your account:
 ```bash
@@ -229,15 +232,15 @@ Submit your code to Google Cloud Build.
 Cloud Build will install dependencies, build the frontend, package it with the backend, and deploy the final application to Cloud Run with all necessary environment variables configured.
 The script will output the final URL of your live service.
 #  The Final Manual Step: Connect Secrets
-For maximum security, the connection between the Cloud Run service and Secret Manager must be configured in the UI after the first deployment.
-Go to the Cloud Run page in the Google Cloud Console.
-Click on your stormcloudrun service.
-Click EDIT & DEPLOY NEW REVISION.
-Navigate to the Variables & Secrets tab.
-You will see that the cloudbuild.yaml file has already linked your secrets for you. Simply verify that the following references exist:
-SESSION_SECRET is referencing the SESSION_SECRET secret.
-ENCRYPTION_KEY is referencing the ENCRYPTION_KEY secret.
-GOOGLE_CLIENT_SECRET is referencing oauth-client-secret.
-GITHUB_CLIENT_SECRET is referencing github-client-secret.
-If they are all present (they should be), you can simply cancel this new revision. If not, add them as needed and click DEPLOY.
-Congratulations! Your StormCloudRun application is now live, secure, and fully functional.
+For maximum security, the connection between the Cloud Run service and Secret Manager must be configured in the UI after the first deployment.<br />
+Go to the Cloud Run page in the Google Cloud Console.<br />
+Click on your stormcloudrun service.<br />
+Click EDIT & DEPLOY NEW REVISION.<br />
+Navigate to the Variables & Secrets tab.<br />
+You will see that the cloudbuild.yaml file has already linked your secrets for you. Simply verify that the following references exist:<br />
+SESSION_SECRET is referencing the SESSION_SECRET secret.<br />
+ENCRYPTION_KEY is referencing the ENCRYPTION_KEY secret.<br />
+GOOGLE_CLIENT_SECRET is referencing oauth-client-secret.<br />
+GITHUB_CLIENT_SECRET is referencing github-client-secret.<br />
+If they are all present (they should be), you can simply cancel this new revision. If not, add them as needed and click DEPLOY.<br />
+Congratulations! Your StormCloudRun application is now live, secure, and fully functional.<br />
