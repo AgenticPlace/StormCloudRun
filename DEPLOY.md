@@ -126,4 +126,118 @@ Common issues:
 To delete the service:
 ```bash
 gcloud run services delete stormcloudrun --region=us-central1
-``` 
+```
+
+### manual steps to first deployment
+
+🚀 Deploying StormCloudRun to Google Cloud
+This guide provides the complete, step-by-step instructions to deploy the full-stack StormCloudRun application to Google Cloud Run. The process uses a secure, automated, source-based deployment pipeline via Google Cloud Build.
+# Prerequisites
+Before you begin, ensure you have the following:
+Google Cloud Project: A project with billing enabled. You will need the Project ID (e.g., eternal-delight-435801-c0).
+Google Cloud SDK (gcloud): The command-line tool must be installed and authenticated on your local machine. If not, install it here.
+GitHub Account: To register the OAuth application.
+Node.js: To install and build the application's dependencies.
+openssl: A command-line tool (pre-installed on macOS/Linux) for generating secure secrets.
+Phase 1: Configuration & Credential Setup
+This phase involves configuring Google Cloud and GitHub to recognize your application and generating the necessary secrets. This is a one-time setup.
+# Generate Production Secrets
+Your application requires two highly secure, random strings for session management and token encryption.
+Generate a SESSION_SECRET: Open your local terminal and run:
+```bash
+openssl rand -base64 32
+```
+Copy the output (e.g., `f+Z/rY8LqV9aN...`). This will be your session secret.
+
+Generate an ENCRYPTION_KEY: This key must be exactly 32 characters long. In your terminal, run:
+```bash
+openssl rand -hex 16
+```
+copy the 32-character hexadecimal output (e.g., a1b2c3d4...). This will be your encryption key.
+Keep these two values ready for a later step.
+# Configure the Google Cloud OAuth App
+Navigate to the Google Cloud Console and select your project.
+Go to APIs & Services -> Credentials.
+Click + CREATE CREDENTIALS -> OAuth client ID.
+Select Web application and give it a name (e.g., "StormCloudRun Web App").
+Under Authorized redirect URIs, click + ADD URI and add your production backend callback URL:
+https://stormcloudrun-117975713968.us-west1.run.app/api/auth/google/callback
+Click CREATE. Copy the generated Client ID and Client Secret.
+# Configure the GitHub OAuth App
+Navigate to your GitHub Settings -> Developer settings -> OAuth Apps.
+Click New OAuth App.
+Fill out the form:
+Application name: StormCloudRun
+Homepage URL: https://stormcloudrun-117975713968.us-west1.run.app
+Authorization callback URL: https://stormcloudrun-117975713968.us-west1.run.app/api/auth/github/callback
+Click Register application.
+On the next page, click Generate a new client secret. Copy the new Client Secret immediately.
+Step 4. Store All Secrets in Google Secret Manager
+Now, we will securely store all four secrets (google_secret, github_secret, session_secret, encryption_key) in Google Cloud.
+Open Cloud Shell ([>_]) in the Google Cloud Console.
+
+// Run the following commands one by one, pasting your actual secret values where indicated.
+
+# Store your Google Client Secret
+```bash
+echo "PASTE_YOUR_GOOGLE_CLIENT_SECRET_HERE" | gcloud secrets create oauth-client-secret --data-file=- --project=eternal-delight-435801-c0
+```
+# Store your GitHub Client Secret
+```bash
+echo "PASTE_YOUR_GITHUB_CLIENT_SECRET_HERE" | gcloud secrets create github-client-secret --data-file=- --project=eternal-delight-435801-c0
+```
+# Store the SESSION_SECRET you generated with openssl
+```bash
+echo "PASTE_YOUR_SESSION_SECRET_HERE" | gcloud secrets create SESSION_SECRET --data-file=- --project=eternal-delight-435801-c0
+```
+# Store the ENCRYPTION_KEY you generated with openssl
+```bash
+echo "PASTE_YOUR_ENCRYPTION_KEY_HERE" | gcloud secrets create ENCRYPTION_KEY --data-file=- --project=eternal-delight-435801-c0
+```
+# Grant Permissions
+The service account for Cloud Build needs permission to deploy to Cloud Run.
+In the Google Cloud Console, go to IAM & Admin -> IAM.
+Find the principal that ends in @cloudbuild.gserviceaccount.com. Click the pencil icon to edit its roles.
+Add the following two roles:
+Cloud Run Admin
+Service Account User
+Click Save.
+Phase 2: Automated Deployment
+With the one-time setup complete, you can now deploy the application using the automated script.
+# Authenticate and Configure Your Local gcloud
+In your local terminal (not Cloud Shell), authenticate your account:
+```bash
+gcloud auth login
+```
+Set your project as the default:
+```bash
+gcloud config set project eternal-delight-435801-c0
+```
+# Run the Deployment Script
+Navigate to the root directory of the StormCloudRun project on your local machine.
+Ensure the deployment script is executable:
+```bash
+chmod +x deploy.sh
+```
+Execute the script. This single command will start the entire build and deploy process.
+```bash
+./deploy.sh
+```
+The script will use the cloudbuild.yaml file to:
+Enable all necessary APIs in your project.
+Submit your code to Google Cloud Build.
+Cloud Build will install dependencies, build the frontend, package it with the backend, and deploy the final application to Cloud Run with all necessary environment variables configured.
+The script will output the final URL of your live service.
+#  The Final Manual Step: Connect Secrets
+For maximum security, the connection between the Cloud Run service and Secret Manager must be configured in the UI after the first deployment.
+Go to the Cloud Run page in the Google Cloud Console.
+Click on your stormcloudrun service.
+Click EDIT & DEPLOY NEW REVISION.
+Navigate to the Variables & Secrets tab.
+You will see that the cloudbuild.yaml file has already linked your secrets for you. Simply verify that the following references exist:
+SESSION_SECRET is referencing the SESSION_SECRET secret.
+ENCRYPTION_KEY is referencing the ENCRYPTION_KEY secret.
+GOOGLE_CLIENT_SECRET is referencing oauth-client-secret.
+GITHUB_CLIENT_SECRET is referencing github-client-secret.
+If they are all present (they should be), you can simply cancel this new revision. If not, add them as needed and click DEPLOY.
+Congratulations! Your StormCloudRun application is now live, secure, and fully functional.
