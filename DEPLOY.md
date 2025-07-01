@@ -136,17 +136,17 @@ gcloud run services delete stormcloudrun --region=us-central1
 🚀 Deploying StormCloudRun to Google Cloud
 This guide provides the complete, step-by-step instructions to deploy the full-stack StormCloudRun application to Google Cloud Run. The process uses a secure, automated, source-based deployment pipeline via Google Cloud Build.
 # Prerequisites
-Before you begin, ensure you have the following:
-Google Cloud Project: A project with billing enabled. You will need the Project ID (e.g., eternal-delight-435801-c0).
-Google Cloud SDK (gcloud): The command-line tool must be installed and authenticated on your local machine. If not, install it here.
-GitHub Account: To register the OAuth application.
-Node.js: To install and build the application's dependencies.
-openssl: A command-line tool (pre-installed on macOS/Linux) for generating secure secrets.
-Phase 1: Configuration & Credential Setup
-This phase involves configuring Google Cloud and GitHub to recognize your application and generating the necessary secrets. This is a one-time setup.
+Before you begin, ensure you have the following:<br />
+Google Cloud Project: A project with billing enabled. You will need the Project ID (e.g., eternal-delight-435801-c0).<br />
+Google Cloud SDK (gcloud): The command-line tool must be installed and authenticated on your local machine. If not, install it here.<br />
+GitHub Account: To register the OAuth application.<br />
+Node.js: To install and build the application's dependencies.<br />
+openssl: A command-line tool (pre-installed on macOS/Linux) for generating secure secrets.<br />
+Phase 1: Configuration & Credential Setup<br />
+This phase involves configuring Google Cloud and GitHub to recognize your application and generating the necessary secrets. This is a one-time setup.<br />
 # Generate Production Secrets
-Your application requires two highly secure, random strings for session management and token encryption.
-Generate a SESSION_SECRET: Open your local terminal and run:
+Your application requires two highly secure, random strings for session management and token encryption.<br />
+Generate a SESSION_SECRET: Open your local terminal and run:<br />
 ```bash
 openssl rand -base64 32
 ```
