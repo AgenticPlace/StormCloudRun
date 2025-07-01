@@ -1,0 +1,22 @@
+{
+  "name": "stormcloudrun-backend",
+  "version": "1.0.0",
+  "description": "Backend for StormCloudRun to handle secure OAuth and API proxying.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@google-cloud/cloudbuild": "^4.0.0",
+    "@google-cloud/firestore": "^7.1.0",
+    "@google-cloud/resource-manager": "^5.0.0",
+    "@google-cloud/secret-manager": "^5.5.0",
+    "@google-cloud/service-usage": "^4.0.0",
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "google-auth-library": "^9.11.0"
+  }
+}

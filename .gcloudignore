@@ -1,0 +1,49 @@
+# Node.js dependencies
+node_modules/
+backend/node_modules/
+
+# Development files
+.env
+.env.local
+.env.development
+.env.test
+.env.production.local
+
+# Build outputs
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation (not needed in production)
+docs/
+*.md
+
+# Testing
+coverage/
+
+# Temporary files
+.tmp/
+temp/ 

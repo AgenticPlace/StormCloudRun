@@ -1,0 +1,47 @@
+steps:
+  # Install frontend dependencies
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['ci']
+    dir: '.'
+
+  # Build frontend
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['run', 'build']
+    dir: '.'
+
+  # Install backend dependencies
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['ci', '--only=production']
+    dir: 'backend'
+
+  # Copy built frontend to backend public directory
+  - name: 'gcr.io/cloud-builders/gsutil'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        mkdir -p backend/public
+        cp -r dist/* backend/public/
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'stormcloudrun'
+      - '--source=backend'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+      - '--port=8080'
+      - '--memory=1Gi'
+      - '--cpu=1'
+      - '--min-instances=0'
+      - '--max-instances=10'
+      - '--set-env-vars=NODE_ENV=production'
+
+options:
+  logging: CLOUD_LOGGING_ONLY 
