@@ -122,7 +122,7 @@ app.get('/api/auth/google', async (req, res, next) => {
         const oAuth2Client = new OAuth2Client(
             process.env.GOOGLE_CLIENT_ID,
             googleClientSecret,
-            `${process.env.BACKEND_URL}/oauth2/google/callback`
+            `${process.env.BACKEND_URL}/api/auth/google/callback`
         );
         const authorizeUrl = oAuth2Client.generateAuthUrl({
             access_type: 'offline',
@@ -135,13 +135,13 @@ app.get('/api/auth/google', async (req, res, next) => {
     }
 });
 
-app.get('/oauth2/google/callback', async (req, res, next) => {
+app.get('/api/auth/google/callback', async (req, res, next) => {
     try {
         const code = req.query.code;
         if (!code) throw new Error("Authorization code not received from Google.");
 
         const googleClientSecret = await getSecret('oauth-client-secret');
-        const oAuth2Client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID, googleClientSecret, `${process.env.BACKEND_URL}/oauth2/google/callback`);
+        const oAuth2Client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID, googleClientSecret, `${process.env.BACKEND_URL}/api/auth/google/callback`);
 
         const { tokens } = await oAuth2Client.getToken(code);
         const ticket = await oAuth2Client.verifyIdToken({ idToken: tokens.id_token, audience: process.env.GOOGLE_CLIENT_ID });
